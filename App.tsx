@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
-  StatusBar
+  StatusBar,
+  Image,
+  Animated
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 
@@ -22,10 +24,175 @@ const htmlContent = `
         }
         
         body {
-            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
-            background: #ffffff;
-            color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #333;
             line-height: 1.6;
+        }
+
+        .guide-content {
+            padding: 16px;
+            background: #f8f9fa;
+        }
+
+        .guide-section {
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1976d2;
+            padding: 16px;
+            background: #fff;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .section-icon {
+            font-size: 18px;
+        }
+
+        .guide-steps {
+            padding: 8px 0;
+        }
+
+        .guide-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .guide-step i {
+            color: #4caf50;
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .step-content strong {
+            color: #102a43;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .step-content span {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #f8f9fa;
+        }
+
+        .input-container {
+            margin: 16px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #102a43;
+            font-size: 15px;
+        }
+        
+        .claim-input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
+            font-size: 15px;
+            resize: none;
+            line-height: 1.5;
+            color: #333;
+            background: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+
+        .claim-input:focus {
+            outline: none;
+            border-color: #1976d2;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
+        }
+
+        .note {
+            display: flex;
+
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(25,118,210,0.04);
+            border-radius: 8px;
+            line-height: 1.4;
+        }
+
+        .note i {
+            color: #1976d2;
+            font-size: 16px;
+            margin-top: 1px;
+        }
+
+        .submit-button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-top: 16px;
+            box-shadow: 0 2px 4px rgba(25,118,210,0.1);
+        }
+        
+        .submit-button:hover {
+            background: #1565c0;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(25,118,210,0.2);
+        }
+        
+        .submit-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 2px rgba(25,118,210,0.1);
+        }
+        
+        .submit-button:disabled {
+            background: #e0e0e0;
+            color: #9e9e9e;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         h1, h2, h3, .header-title, .page-title {
             font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
@@ -252,21 +419,24 @@ const htmlContent = `
         }
         
         .page-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-top: 10px;
+            text-align: left;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: #fff;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
         }
         
         .page-title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2196F3;
-            margin-bottom: 8px;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 4px;
         }
         
         .page-subtitle {
             font-size: 14px;
             color: #666;
+            line-height: 1.4;
         }
         
         .quick-links-grid {
@@ -1172,14 +1342,79 @@ const htmlContent = `
                         id="claim-input"
                         class="claim-input"
                         placeholder="e.g., Is it true that... OR paste a URL from a news article or YouTube video."
-                        rows="5"
+                        rows="4"
                     ></textarea>
-                    <p class="note">
+                    <div class="note">
+                        <i class="ri-information-line"></i>
                         Note: For video links, the AI searches for transcripts and articles online. Fact-checking depends on publicly available text about the video.
-                    </p>
+                    </div>
+                    <button id="submit-button" class="submit-button">Check Fact</button>
+                </div>
+            </div>
+
+            <!-- How to Use Page -->
+            <div id="how-to-use-page" class="page-container">
+                <div class="page-header">
+                    <h1 class="page-title">How to Use</h1>
+                    <p class="page-subtitle">Learn how to effectively use the 4B Fact Checker</p>
                 </div>
 
-                <button id="submit-button" class="submit-button">Check Fact</button>
+                <div class="guide-content">
+                    <div class="guide-section">
+                        <div class="section-header">
+                            <i class="ri-flag-line section-icon"></i>
+                            Getting Started
+                        </div>
+                        <div class="guide-steps">
+                            <div class="guide-step">
+                                <i class="ri-checkbox-circle-line"></i>
+                                <span>Choose a category from the Home page or use Quick Check for general claims</span>
+                            </div>
+                            <div class="guide-step">
+                                <i class="ri-checkbox-circle-line"></i>
+                                <span>Type or paste the claim you want to fact-check</span>
+                            </div>
+                            <div class="guide-step">
+                                <i class="ri-checkbox-circle-line"></i>
+                                <span>Tap "Check Facts" to start the verification process</span>
+                            </div>
+                            <div class="guide-step">
+                                <i class="ri-checkbox-circle-line"></i>
+                                <span>Wait for AI analysis and source verification</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="guide-section">
+                        <div class="section-header">
+                            <i class="ri-lightbulb-line section-icon"></i>
+                            Best Practices for Claims
+                        </div>
+                        <div class="guide-steps">
+                            <div class="guide-step">
+                                <i class="ri-checkbox-circle-line"></i>
+                                <div class="step-content">
+                                    <strong>Be specific:</strong>
+                                    <span>"President announced 20% budget increase for education" instead of "President said something about education"</span>
+                                </div>
+                            </div>
+                            <div class="guide-step">
+                                <i class="ri-checkbox-circle-line"></i>
+                                <div class="step-content">
+                                    <strong>Include context:</strong>
+                                    <span>Add dates, locations, or specific numbers when possible</span>
+                                </div>
+                            </div>
+                            <div class="guide-step">
+                                <i class="ri-checkbox-circle-line"></i>
+                                <div class="step-content">
+                                    <strong>Use clear language:</strong>
+                                    <span>Avoid slang or ambiguous terms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- How to Use Page -->
@@ -1291,9 +1526,13 @@ const htmlContent = `
                 </div>
 
                 <div class="version-info">
-                     Developed by Police Regional Office MIMAROPA | Est. 2025<br>
-                     Powered by Google Gemini AI | Built with React Native
-                 </div>
+                    Developed by RICTMD 4B MIMAROPA | Est. 2025<br>
+                    Powered by Google Gemini AI | Built with React<br>
+                    Made with ❤️ by 
+                    <a href="https://pinesprojects.hashnode.dev/" target="_blank" rel="noopener noreferrer">
+                        Pinesprojects
+                    </a>
+                </div>
             </div>
 
             <!-- Category-specific fact checking page -->
@@ -1999,6 +2238,32 @@ For ALL claims, your response MUST strictly follow this format:
 `;
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const fadeAnim = useState(new Animated.Value(1))[0];
+
+  useEffect(() => {
+    setTimeout(() => {
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true
+      }).start(() => setShowSplash(false));
+    }, 4500); // Start fading out after 4.5s for a total of 5s
+  }, []);
+
+  if (showSplash) {
+    return (
+      <Animated.View style={[styles.splashContainer, { opacity: fadeAnim }]}>
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        <Image 
+          source={require('./assets/splash-icon.png')}
+          style={styles.splashImage}
+          resizeMode="contain"
+        />
+      </Animated.View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
@@ -2026,5 +2291,15 @@ const styles = StyleSheet.create({
   },
   webview: {
     flex: 1,
+  },
+  splashContainer: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  splashImage: {
+    width: '60%',
+    height: '60%',
   },
 });
