@@ -25,6 +25,14 @@
     },
     "web": {
       "favicon": "./assets/pnp-logo-square.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "783c22a1-28cf-42e4-9f67-18526eb743c7"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
