@@ -682,15 +682,21 @@ const htmlContent = `
         .verdict {
             padding: 20px;
             text-align: center;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
         
-    .verdict.TRUE { background: rgba(76,175,80,0.06); color: #2e7d32; border: 1px solid rgba(76,175,80,0.18); }
-    .verdict.FALSE { background: rgba(244,67,54,0.06); color: #b71c1c; border: 1px solid rgba(244,67,54,0.16); }
-    .verdict.MISLEADING { background: rgba(255,152,0,0.06); color: #e65100; border: 1px solid rgba(255,152,0,0.14); }
-    .verdict.CANNOT.VERIFY { background: rgba(158,158,158,0.06); color: #424242; border: 1px solid rgba(158,158,158,0.14); }
+    .verdict.TRUE { background: rgba(76,175,80,0.12); color: #388e3c; border: 1px solid rgba(76,175,80,0.24); }
+    .verdict.FALSE { background: rgba(244,67,54,0.12); color: #d32f2f; border: 1px solid rgba(244,67,54,0.24); }
+    .verdict.MISLEADING { background: rgba(255,152,0,0.12); color: #f57c00; border: 1px solid rgba(255,152,0,0.24); }
+    .verdict.CANNOT-VERIFY, 
+    .verdict.CANNOT_VERIFY,
+    .verdict.CANNOTVERIFY { 
+        background: rgba(33,150,243,0.15); 
+        color: #0d47a1; 
+        border: 1px solid rgba(33,150,243,0.3); 
+    }
         
         .result-section {
             padding: 20px;
@@ -920,7 +926,7 @@ const htmlContent = `
         }
         
         .source-title-container a {
-            color: #2196F3;
+            color: #1565c0;
             text-decoration: none;
             font-weight: 600;
             font-size: 15px;
@@ -931,11 +937,11 @@ const htmlContent = `
         
         .source-title-container a:hover {
             text-decoration: underline;
-            color: #1976d2;
+            color: #0d47a1;
         }
         
         .source-type-badge {
-            background: #6070d8;
+            background: #1976d2;
             color: white;
             padding: 4px 12px;
             border-radius: 15px;
@@ -943,10 +949,11 @@ const htmlContent = `
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(25,118,210,0.1);
         }
         
         .trusted-badge {
-            background: transparent;
+            background: rgba(76,175,80,0.1);
             color: #2e7d32;
             padding: 4px 12px;
             border-radius: 12px;
@@ -1025,28 +1032,6 @@ const htmlContent = `
             border: 1px solid #e91e63;
         }
         
-        .sources-summary {
-            background: transparent;
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 1px solid rgba(16,42,67,0.04);
-        }
-        
-        .sources-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
-        }
-        
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 12px;
-        }
-        
         .stat-number {
             font-size: 18px;
             font-weight: bold;
@@ -1095,17 +1080,19 @@ const htmlContent = `
         }
         
         .notice-header {
-            background: #6070d8;
+            background: #479beeff;
             color: white;
             padding: 25px;
             border-radius: 20px 20px 0 0;
             text-align: center;
+            box-shadow: 0 2px 4px rgba(25,118,210,0.1);
         }
         
         .notice-title {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 8px;
+            color: white;
         }
         
         .notice-subtitle {
@@ -1326,6 +1313,13 @@ const htmlContent = `
                         <div class="quick-link-title">Entertainment</div>
                         <div class="quick-link-desc">Celebrity & entertainment news</div>
                     </div>
+
+                    <div class="quick-link-card" onclick="quickSelectCategory('national')">
+                        <i class="ri-shield-line quick-link-icon"></i>
+                        <div class="quick-link-title">National Defense</div>
+                        <div class="quick-link-desc">National security & defense claims</div>
+                    </div>
+
                  </div>
             </div>
 
@@ -1575,9 +1569,6 @@ const htmlContent = `
 
                 <div id="sources-section" class="result-section" style="display: none;">
                     <h2>Sources</h2>
-                    <p class="sources-description">
-                        The AI consulted the following web pages to arrive at its conclusion. These are the actual blog posts, news articles, or other online resources used for fact-checking.
-                    </p>
                     <ul id="sources-list" class="sources-list"></ul>
                 </div>
             </div>
@@ -1726,6 +1717,10 @@ const htmlContent = `
                 entertainment: {
                     title: 'Celebrity & Entertainment News',
                     placeholder: 'Enter celebrity news, entertainment claim, or industry information...'
+                },
+                national: {
+                    title: 'National Security & Defense Claims',
+                    placeholder: 'Enter national security or defense claim information...'
                 }
             };
             
@@ -1990,7 +1985,7 @@ Cross-reference with official entertainment news outlets, celebrity social media
             // Show verdict
             const verdictElement = document.getElementById('verdict');
             verdictElement.textContent = \`VERDICT: \${result.verdict}\`;
-            verdictElement.className = \`verdict \${result.verdict.replace(' ', '.')}\`;
+            verdictElement.className = \`verdict \${result.verdict.replace(' ', '-')}\`;
 
             // Show original claim
             document.getElementById('original-claim').textContent = result.claim;
@@ -2005,33 +2000,7 @@ Cross-reference with official entertainment news outlets, celebrity social media
                 
                 sourcesList.innerHTML = '';
                 
-                // Add sources summary
-                const trustedCount = result.sources.filter(s => s.isTrusted).length;
-                const totalCount = result.sources.length;
-                
-                const summaryDiv = document.createElement('div');
-                summaryDiv.className = 'sources-summary';
-                summaryDiv.innerHTML = \`
-                    <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px;">
-                        Sources Analysis Summary
-                    </div>
-                    <div class="sources-stats">
-                        <div class="stat-item">
-                            <div class="stat-number">\${totalCount}</div>
-                            <div class="stat-label">Total Sources</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">\${trustedCount}</div>
-                            <div class="stat-label">Trusted Sources</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">\${Math.round((trustedCount / totalCount) * 100)}%</div>
-                            <div class="stat-label">Trust Score</div>
-                        </div>
-                    </div>
-                \`;
-                
-                sourcesList.appendChild(summaryDiv);
+                // Sources summary removed
                 
                 result.sources.forEach(source => {
                     const li = document.createElement('li');

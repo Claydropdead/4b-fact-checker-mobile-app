@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "fact-checker-app",
-    "slug": "fact-checker-app",
+    "name": "4B Fact Checker",
+    "slug": "4b-fact-checker",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/pnp-logo-square.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/pnp-logo-square.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,14 +17,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/pnp-logo-square.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.claydropdead.factcheckerapp"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/pnp-logo-square.png"
     }
   }
 }
